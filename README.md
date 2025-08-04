@@ -1,6 +1,10 @@
 # brightdata-spreadsheet-enrichment
 
 
+<div align="center">
+<img width="300" height="200" alt="image" src="https://github.com/user-attachments/assets/9d4edde5-64fb-4976-9151-7671c4175b2f" />
+  <p>Powered by <a href="https://brightdata.com">Bright Data</a></p>
+</div>
 
 ## 🚀 Welcome to the Spreadsheet Enrichment Repository!
 
