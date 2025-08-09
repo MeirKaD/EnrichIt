@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Header, Spreadsheet, InfoPanel } from "./components";
+import { Header, Spreadsheet, InfoPanel, CSVUpload } from "./components";
 import { GlassStyle, SpreadsheetData } from "./types";
 import { motion } from "framer-motion";
 import Toast from "./components/Toast";
@@ -79,12 +79,23 @@ export type ToastDetail = {
 function App() {
   const [isInfoPanelOpen, setIsInfoPanelOpen] = useState<boolean>(true);
   const [toastDetail, setToastDetail] = useState<ToastDetail>({});
+  const [showCSVUpload, setShowCSVUpload] = useState<boolean>(true);
   const [data, setData] = useState<SpreadsheetData>({
     headers: Array(5).fill(""),
     rows: Array(5)
       .fill(0)
       .map(() => Array(5).fill({ value: "" })),
   });
+
+  const handleCSVDataLoad = (csvData: SpreadsheetData) => {
+    setData(csvData);
+    setShowCSVUpload(false);
+    setToastDetail({
+      message: "CSV data loaded successfully!",
+      type: "success",
+      isShowing: true,
+    });
+  };
 
   // Add these styles at the top of the component, before the return statement
   const glassStyle: GlassStyle = {
@@ -160,25 +171,65 @@ function App() {
           <Header glassStyle={glassStyle.card} data={data} />
         </motion.div>
 
-        {/* Spreadsheet Component */}
+        {/* CSV Upload or Spreadsheet Component */}
         <motion.div
           className="relative"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          {isInfoPanelOpen && (
+          {isInfoPanelOpen && !showCSVUpload && (
             <InfoPanel
               glassStyle={glassStyle.card}
               onDismiss={() => setIsInfoPanelOpen(false)}
             />
           )}
 
-          <Spreadsheet
-            data={data}
-            setData={setData}
-            setToast={setToastDetail}
-          />
+          {showCSVUpload ? (
+            <div className="space-y-6">
+              <CSVUpload 
+                onDataLoad={handleCSVDataLoad}
+                glassStyle={glassStyle.card}
+              />
+              
+              {/* Option to skip CSV upload */}
+              <motion.div
+                className="text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <button
+                  onClick={() => setShowCSVUpload(false)}
+                  className="text-gray-600 hover:text-gray-800 underline text-sm transition-colors"
+                >
+                  Or start with an empty spreadsheet
+                </button>
+              </motion.div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Button to go back to CSV upload */}
+              <motion.div
+                className="text-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <button
+                  onClick={() => setShowCSVUpload(true)}
+                  className="bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  Upload New CSV File
+                </button>
+              </motion.div>
+              
+              <Spreadsheet
+                data={data}
+                setData={setData}
+                setToast={setToastDetail}
+              />
+            </div>
+          )}
         </motion.div>
       </div>
     </div>
